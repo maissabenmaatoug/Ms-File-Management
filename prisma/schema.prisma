@@ -1,0 +1,45 @@
+// Your existing models
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum FileStatus {
+    DELETED
+    ARCHIVED
+    ACTIVE
+}
+
+model File {
+  uid       String        @id  
+  fileName  String
+  location  String
+  format    String
+  md5Hash   String
+  createdBy String
+  createdAt DateTime      @default(now())
+  metaData  FileMetaData []  
+  status    FileStatus
+
+}
+
+model FileMetaData {
+  uid   String         @id @unique
+  uidFile String      
+  key   String        
+  value String         
+  file  File           @relation(fields: [uidFile], references: [uid])
+}
+
+model FileMetaDataKey {
+
+  key   String      @id @unique   
+}
+
+model FileType {
+  code  String @id @unique
+  label String @unique
+}
